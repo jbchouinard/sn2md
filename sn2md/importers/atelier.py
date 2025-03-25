@@ -8,16 +8,14 @@ from PIL import Image
 
 from sn2md.types import ImageExtractor
 
-ROWS = 16
-COLUMNS = 12
 TILE_PIXELS = 128
-
-# Generate the starting numbers using range
+# Magic number for the upper left tile in an SPD file
 START_INDEX = 7976857
 
-def tid_to_row_col(tid):
-    row = (tid - START_INDEX) % TILE_PIXELS
-    col = (tid - START_INDEX - row) // TILE_PIXELS
+
+def tid_to_row_col(tid, row_stride=4096):
+    row = (tid - START_INDEX) % row_stride
+    col = (tid - START_INDEX - row) // row_stride
     return row, col
 
 
@@ -62,7 +60,6 @@ def read_tiles_data(spd_file_path: str) -> list[Any]:
 
 def spd_to_png(spd_file_path: str, output_path: str) -> str:
     tiles_data = read_tiles_data(spd_file_path)
-    # Convert to a dictionary of {tid: tile_data} for easy lookup
     tile_dict = {tid: tile_data for tid, tile_data in tiles_data}
 
     full_image = Image.new("LA", max_x_y(tile_dict))
@@ -71,14 +68,9 @@ def spd_to_png(spd_file_path: str, output_path: str) -> str:
         tile_data = tile_dict[tid]
         tile = Image.open(io.BytesIO(tile_data))
 
-        # Calculate tile position based on index and dimensions
         row, col = tid_to_row_col(tid)
-        print("|tid = {0}".format(tid))
-        print("|tid_to_row_col(tid) = {0}".format(tid_to_row_col(tid)))
-        print("|row,col = {0},{1}".format(row, col))
         x = col * TILE_PIXELS
         y = row * TILE_PIXELS
-        print("|x,y = {0},{1}".format(x, y))
 
         full_image.paste(tile, (x, y))
 
