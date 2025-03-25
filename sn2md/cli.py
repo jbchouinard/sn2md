@@ -5,6 +5,7 @@ import tomllib
 import click
 from platformdirs import user_config_dir
 
+from sn2md.importers.atelier import AtelierExtractor
 from sn2md.importers.pdf import PDFExtractor
 from sn2md.importers.png import PNGExtractor
 
@@ -109,6 +110,8 @@ def import_supernote_file(ctx, filename: str) -> None:
             import_supernote_file_core(PDFExtractor(), filename, output, config, force, progress, model)
         elif filename.lower().endswith(".png"):
             import_supernote_file_core(PNGExtractor(), filename, output, config, force, progress, model)
+        elif filename.lower().endswith(".spd"):
+            import_supernote_file_core(AtelierExtractor(), filename, output, config, force, progress, model)
         else:
             print("Unsupported file format")
             sys.exit(1)
