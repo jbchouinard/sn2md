@@ -1,12 +1,15 @@
-# Supernote to text converter (sn2md)
+# Supernote to text/image converter (sn2md)
 
 A CLI tool to convert Supernote `.note`, Atelier `.spd`, PDFs, and images to text using any LLM supported by the [LLM library](https://llm.datasette.io/en/stable/plugins/directory.html).
+
+1. Converts the source file to PNG images.
+2. Sends the images to the LLM to convert to text (markdown is the default format, but is customizable)
 
 ![Supernote to Markdown](docs/supernote-to-markdown.png)
 
 Sample output: [20240712_151149.md](./docs/20240712_151149/20240712_151149.md)
 
-The default LLM prompt with gpt-4o-mini is configured to convert images to markdown:
+The default LLM prompt (with gpt-4o-mini) is configured to convert to markdown:
 
 - Supports markdown in .note files (#tags, `## Headers`, `[[Links]]`, etc)
 - Supports basic formatting (lists, tables, etc)
@@ -26,17 +29,17 @@ Setup your **OPENAI_API_KEY** environment variable.
 To import a single Supernote `.note` file, use the `file` command:
 
 ```sh
-# import one .note file (or Atelier .spd, PDF, image):
+# import one .note file (or Atelier .spd, PDFs, or image):
 sn2md file <path_to_file>
 
-# import a directory of .note files (or PDFs, images):
+# import a directory of .note files (or Atelier .spd files, PDFs, or images):
 sn2md directory <path_to_directory>
 ```
 
 Notes:
+
 - If the source file has not changed, repeated runs of commands will print a warning and exit. You can force re-runs by running with the `--force` flag.
 - If the source file has not changed, but the output file has (b/c _maybe_ you modified it manually by adding your own notes?) repeated runs of commands will print a warning and exit. You can force the command with the `--force` flag.
-
 
 ## Configuration
 
@@ -44,6 +47,7 @@ A configuration file can be used to override the program defaults. The
 default location is platform specific (eg, `~/Library/Application Support/sn2md.toml` on OSX, `~/.config/sn2md.toml` on Linux, etc).
 
 Values that you can configure:
+
 - `template`: The output template to generate markdown.
 - `output_filename_template`: The filename that is generated. Basic template variables are available. (default: `{{file_basename}}.md`).
 - `output_path_template`: The directory that is created to store output. Basic template variables are available. (default: `{{file_basename}}`).
@@ -93,7 +97,7 @@ This can be overridden in the configuration file. For example, to have underline
 
 ### Output Template
 
-You can provide your own [jinja template](https://jinja.palletsprojects.com/en/3.1.x/templates/#synopsis), if you prefer to customize the markdown
+You can provide your own [jinja template](https://jinja.palletsprojects.com/en/3.1.x/templates/#synopsis), if you prefer to customize the
 output. The default template is:
 
 ```jinja
@@ -195,6 +199,7 @@ Notes: The default prompt appears to work well with Gemini. Your mileage may var
 #### Ollama
 
 You can run your own local LLM modals using [Ollama](https://ollama.com/) (or [other supported local methods](https://llm.datasette.io/en/stable/plugins/directory.html#local-models)), using an LLM that supports visual inputs:
+
 - Install Ollama, and install a model that supports visual inputs.
 - Install the [ollama llm plugin](https://github.com/taketwo/llm-ollama).
 - Specify the model in the configuration file as `model`, or use the `--model` CLI flag.
@@ -243,9 +248,9 @@ Contributions are welcome. Please open an issue or submit a pull request.
 ### Development
 
 ```sh
-git clone https://github.com/yourusername/supernote-importer.git
+git clone https://github.com/dsummersl/sn2md.git
 
-cd supernote-importer
+cd sn2md
 
 poetry install
 pytest

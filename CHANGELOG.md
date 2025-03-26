@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.0
+
+### Added
+
+- Adds support for Supernote Atelier files (.spd files).
+
 ## v2.2.0
 
 ### Added
@@ -64,10 +70,11 @@
 ### Added
 
 Initial release:
+
 - Add support for supernotes .note format
 - Supports conversion of images to markdown
 - Can customize the template with --template option.
 
 # About
 
-https://keepachangelog.com/en/1.1.0/
+<https://keepachangelog.com/en/1.1.0/>

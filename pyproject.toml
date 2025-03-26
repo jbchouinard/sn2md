@@ -11,8 +11,8 @@ reportMissingParameterType = false
 
 [tool.poetry]
 name = "sn2md"
-version = "2.2.0"
-description = "Convert Supernote .note, PDF, or image files to text"
+version = "2.3.0"
+description = "Convert Supernote .note, .spd, PDF, or image files to text/images"
 authors = ["Dane Summers <dsummersl@yahoo.com>"]
 readme = "README.md"
 
