@@ -11,6 +11,7 @@ from jinja2 import Template
 from supernotelib import Notebook
 
 from sn2md.ai_utils import image_to_markdown, image_to_text
+from sn2md.importers.atelier import AtelierExtractor
 from sn2md.importers.pdf import PDFExtractor
 from sn2md.importers.png import PNGExtractor
 from sn2md.types import Config, ImageExtractor
@@ -272,6 +273,16 @@ def import_supernote_directory_core(
                 if file.lower().endswith(".png"):
                     import_supernote_file_core(
                         PNGExtractor(), filename, output, config, force, progress, model
+                    )
+                if file.lower().endswith(".spd"):
+                    import_supernote_file_core(
+                        AtelierExtractor(),
+                        filename,
+                        output,
+                        config,
+                        force,
+                        progress,
+                        model,
                     )
             except ValueError as e:
                 logger.debug(f"Skipping {filename}: {e}")
