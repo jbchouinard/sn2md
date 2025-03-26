@@ -1,6 +1,6 @@
 # Supernote to text converter (sn2md)
 
-A CLI tool to convert Supernote `.note`, PDFs, and images  to using any LLM supported by the [LLM library](https://llm.datasette.io/en/stable/plugins/directory.html).
+A CLI tool to convert Supernote `.note`, Atelier `.spd`, PDFs, and images to text using any LLM supported by the [LLM library](https://llm.datasette.io/en/stable/plugins/directory.html).
 
 ![Supernote to Markdown](docs/supernote-to-markdown.png)
 
@@ -26,8 +26,8 @@ Setup your **OPENAI_API_KEY** environment variable.
 To import a single Supernote `.note` file, use the `file` command:
 
 ```sh
-# import one .note file (or PDF, image):
-sn2md file <path_to_note_file>
+# import one .note file (or Atelier .spd, PDF, image):
+sn2md file <path_to_file>
 
 # import a directory of .note files (or PDFs, images):
 sn2md directory <path_to_directory>
@@ -187,7 +187,7 @@ To use Gemini:
 export LLM_GEMINI_KEY=yourkey
 llm install llm-gemini
 
-sn2md -m gemini-1.5-pro-latest file <path_to_note_file>
+sn2md -m gemini-1.5-pro-latest file <path_to_file>
 ```
 
 Notes: The default prompt appears to work well with Gemini. Your mileage may vary!
@@ -207,10 +207,10 @@ ollama serve
 ollama pull llama3.2-vision:11b
 
 llm install llm-ollama
-sn2md -m llama3.2-vision:11b file <path_to_note_file>
+sn2md -m llama3.2-vision:11b file <path_to_file>
 ```
 
-Notes: The default prompt does NOT work well with `llama3.2-vision:11b`. You will need to provide a custom prompt in the configuration file. Basic testing showed this configuration provided basic OCR capabilities (probably not mermaid, ore other markdown features!):
+Notes: The default prompt does NOT work well with `llama3.2-vision:11b`. You will need to provide a custom prompt in the configuration file. Basic testing showed this configuration provided basic OCR capabilities (probably not mermaid, or other markdown features!):
 
 ```toml
 model = "llama3.2-vision:11b"
@@ -244,10 +244,10 @@ Contributions are welcome. Please open an issue or submit a pull request.
 
 ```sh
 git clone https://github.com/yourusername/supernote-importer.git
-- [supernote-tool library](https://github.com/jya-dev/supernote-tool) for .note file parsing.
-cd supernote-importer
-poetry install
 
+cd supernote-importer
+
+poetry install
 pytest
 ```
 
@@ -259,4 +259,5 @@ This project is licensed under the AGPL License. See the [LICENSE](LICENSE) file
 
 - [Supernote](https://www.supernote.com/) for their amazing note-taking devices.
 - [supernote-tool library](https://github.com/jya-dev/supernote-tool) for .note file parsing.
+- [Atelier-parser](https://github.com/Ziv-Ink/Atelier-parser) for how .spd files are generated/parsed.
 - [llm](https://llm.datasette.io/) for LLM access.

@@ -9,3 +9,4 @@ transcripts
 __pycache__
 dist/
 .coverage
+*.spd-*
