@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 import sqlite3
 
@@ -7,31 +8,34 @@ from PIL import Image
 
 from sn2md.types import ImageExtractor
 
+logger = logging.getLogger(__name__)
+
 TILE_PIXELS = 128
+STRIDE = 4096
 # Magic number for the upper left tile in an SPD file
 START_INDEX = 7976857
 
 
-def tid_to_row_col(tid, row_stride=4096):
-    row = (tid - START_INDEX) % row_stride
-    col = (tid - START_INDEX - row) // row_stride
+def tid_to_row_col(tid):
+    offset = tid - START_INDEX
+    col = offset % STRIDE
+    row = offset // STRIDE
     return row, col
 
 
-def max_x_y(tile_dict: list[dict]) -> tuple[int, int]:
+def find_max_x_y(tile_dict: list[dict]) -> tuple[int, int]:
     max_x = 0
     max_y = 0
 
     for tile_data in tile_dict:
         for tid in tile_data.keys():
             row, col = tid_to_row_col(tid)
-            x = col * TILE_PIXELS
-            y = row * TILE_PIXELS
+            x = row * TILE_PIXELS
+            y = col * TILE_PIXELS
 
             # Update max_x and max_y
             max_x = max(max_x, x + TILE_PIXELS)
             max_y = max(max_y, y + TILE_PIXELS)
-
     return max_x, max_y
 
 
@@ -66,30 +70,43 @@ def read_tiles_data(spd_file_path: str) -> list[dict]:
     return tiles_data
 
 
+def test_spd_format(tiles_data):
+    test_data =[tid_to_row_col(v) for v in tiles_data[0].keys()]
+    logger.debug("tids = %s", tiles_data[0].keys())
+    logger.debug("rows/cols = %s", test_data)
+    if any(v[0] > 200 or v[1] > 200 for v in test_data):
+        raise ValueError("The image is too large to render")
+
+
 def spd_to_png(spd_file_path: str, output_path: str) -> str:
     tiles_data = read_tiles_data(spd_file_path)
-    full_image = Image.new("RGBA", max_x_y(tiles_data))
+    logger.debug("Number of layers: %d", len(tiles_data))
+    test_spd_format(tiles_data)
 
+    x_y = find_max_x_y(tiles_data)
     # Ensure that even if the layers are all empty, we create a blank image
-    image_size = full_image.size
-    if full_image.size == (0, 0):
-        image_size = (TILE_PIXELS * 12, TILE_PIXELS * 16)
+    if x_y == (0, 0):
+        x_y = (TILE_PIXELS * 12, TILE_PIXELS * 16)
+    logger.debug("output size: %s", x_y)
+    full_image = Image.new("RGBA", x_y)
 
     for tile_dict in reversed(tiles_data):
         for tid in tile_dict.keys():
             tile_data = tile_dict[tid]
             tile = Image.open(io.BytesIO(tile_data)).convert("RGBA")
 
+            assert tile.size == (TILE_PIXELS, TILE_PIXELS)
+
             row, col = tid_to_row_col(tid)
-            x = col * TILE_PIXELS
-            y = row * TILE_PIXELS
+            x = row * TILE_PIXELS
+            y = col * TILE_PIXELS
 
             # Blend the tile image with the full image
-            tile_image = Image.new("RGBA", image_size)
+            tile_image = Image.new("RGBA", x_y)
             tile_image.paste(tile, (x, y))
             full_image = Image.alpha_composite(full_image, tile_image)
 
-    full_image_with_white_bg = Image.new("RGB", image_size, (255, 255, 255))
+    full_image_with_white_bg = Image.new("RGB", x_y, (255, 255, 255))
     full_image_with_white_bg.paste(full_image, (0, 0), full_image)
 
     image_path = (

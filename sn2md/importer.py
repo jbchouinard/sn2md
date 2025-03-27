@@ -224,6 +224,7 @@ def import_supernote_file_core(
     progress: bool = False,
     model: str | None = None,
 ) -> None:
+    logger.debug("import_supernote_file_core: %s", file_name)
     if not force:
         verify_metadata_file(config, output, file_name)
 

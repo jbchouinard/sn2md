@@ -26,6 +26,10 @@ def setup_logging(level):
     importer_logger.setLevel(level)
     logger.debug(f"Logging level: {level}")
 
+    # Suppress PIL debugging
+    pil_logger = logging.getLogger('PIL.PngImagePlugin')
+    pil_logger.setLevel(logging.WARNING)
+
 
 def get_config(config_file: str) -> Config:
     try:
