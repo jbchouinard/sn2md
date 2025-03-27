@@ -39,6 +39,24 @@ def find_max_x_y(tile_dict: list[dict]) -> tuple[int, int]:
     return max_x, max_y
 
 
+def clean_bad_tids_from_tiles_data(tiles_data):
+    # Some files will have tiles that are out of bounds, remove them.
+    cleaned_data = [
+        {
+            k: v for k, v in tiles_dict.items() if (
+                row_col := tid_to_row_col(k)
+            )[0] < 100 and row_col[1] < 100
+        } for tiles_dict in tiles_data
+    ]
+
+    for i, cd in enumerate(cleaned_data):
+        if len(cd) != len(tiles_data[i]):
+            logger.warning("Removed %d tiles from layer %d", len(tiles_data[i]) - len(cd), i)
+
+    return cleaned_data
+
+
+
 def read_tiles_data(spd_file_path: str) -> list[dict]:
     conn = sqlite3.connect(spd_file_path)
     cursor = conn.cursor()
@@ -67,21 +85,12 @@ def read_tiles_data(spd_file_path: str) -> list[dict]:
 
     conn.close()
 
-    return tiles_data
-
-
-def test_spd_format(tiles_data):
-    test_data =[tid_to_row_col(v) for v in tiles_data[0].keys()]
-    logger.debug("tids = %s", tiles_data[0].keys())
-    logger.debug("rows/cols = %s", test_data)
-    if any(v[0] > 200 or v[1] > 200 for v in test_data):
-        raise ValueError("The image is too large to render")
+    return clean_bad_tids_from_tiles_data(tiles_data)
 
 
 def spd_to_png(spd_file_path: str, output_path: str) -> str:
     tiles_data = read_tiles_data(spd_file_path)
     logger.debug("Number of layers: %d", len(tiles_data))
-    test_spd_format(tiles_data)
 
     x_y = find_max_x_y(tiles_data)
     # Ensure that even if the layers are all empty, we create a blank image
