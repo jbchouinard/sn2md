@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.3.2
+
+### Changed
+
+- Bugfix: Detects bad TID entries and ignores them in atelier file conversion.
+
 ## v2.3.1
 
 ### Changed
