@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Bugfix: Detects bad TID entries and scrubs drops them from atelier conversions.
+- Bugfix: Detects bad TID entries and ignores them in atelier file conversion.
 
 ## v2.3.1
 
