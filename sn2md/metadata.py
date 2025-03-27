@@ -1,8 +1,11 @@
 import hashlib
+import logging
 import os
 import yaml
 from dataclasses import asdict
 from .types import ConversionMetadata
+
+logger = logging.getLogger(__name__)
 
 
 def check_metadata_file(metadata_file: str) -> ConversionMetadata | None:
@@ -18,8 +21,14 @@ def check_metadata_file(metadata_file: str) -> ConversionMetadata | None:
             data = yaml.safe_load(f)
             metadata = ConversionMetadata(**data)
 
+            if not os.path.exists(metadata.output_file):
+                raise ValueError("Output file does not exist anymore!")
+
             with open(metadata.output_file, "rb") as f:
                 output_hash = hashlib.sha1(f.read()).hexdigest()
+
+            if not os.path.exists(metadata.input_file):
+                raise ValueError("Input file does not exist anymore!")
 
             with open(metadata.input_file, "rb") as f:
                 source_hash = hashlib.sha1(f.read()).hexdigest()

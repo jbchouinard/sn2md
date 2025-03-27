@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.3.1
+
+### Changed
+
+- Bugfix: Adds support for .spd files in 'directory' command.
+- Bugfix: Detect .spd files that cannot be decoded correctly.
+
 ## v2.3.0
 
 ### Added

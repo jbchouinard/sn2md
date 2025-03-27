@@ -3,7 +3,16 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import pytest
-from sn2md.importers.atelier import read_tiles_data, spd_to_png
+from sn2md.importers.atelier import read_tiles_data, spd_to_png, tid_to_row_col, START_INDEX
+
+
+
+@pytest.mark.parametrize("tid, row, col", [
+    (START_INDEX, 0, 0),
+    (8009635, 8, 10),
+])
+def test_tid_to_row_col(tid, row, col):
+    assert tid_to_row_col(tid) == (row, col)
 
 
 @pytest.mark.parametrize(
